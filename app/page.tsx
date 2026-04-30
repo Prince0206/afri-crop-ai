@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { HfInference } from "@huggingface/inference";
 import { Camera, Upload, Leaf, Languages } from "lucide-react";
+import Image from "next/image";
 
 const hf = new HfInference(process.env.NEXT_PUBLIC_HF_TOKEN || "");
 
@@ -90,10 +91,13 @@ export default function AfriCropAI() {
             className="border-2 border-dashed border-emerald-700 hover:border-emerald-500 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer transition-colors mb-6"
           >
             {preview ? (
-              <img
+              <Image
                 src={preview}
-                alt="preview"
-                className="max-h-60 rounded-xl object-cover"
+                alt="Crop preview"
+                width={400}
+                height={400}
+                className="..."
+                unoptimized // needed for blob/data URLs from file upload
               />
             ) : (
               <>
