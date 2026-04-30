@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import { HfInference } from "@huggingface/inference";
-import { Camera, Upload, Leaf, Languages } from "lucide-react";
+import { Camera, Leaf, Languages } from "lucide-react";
 import Image from "next/image";
 
 const hf = new HfInference(process.env.NEXT_PUBLIC_HF_TOKEN || "");
@@ -38,10 +38,9 @@ export default function AfriCropAI() {
     setResult("");
 
     try {
-      const { data } = await hf.imageClassification({
-        model: "nateraw/vit-base-patch16-224-cassava", // strong open model
-        image: image,
-        // top_k: 3
+      const data = await hf.imageClassification({
+        model: "nateraw/vit-base-patch16-224-cassava",
+        data: image,
       });
 
       const top = data[0];
@@ -51,12 +50,16 @@ export default function AfriCropAI() {
       setResult(language === "sw" ? displayLabel : top.label);
       setConfidence(Math.round(top.score * 100));
 
-      // future agent hook - we'll expand in sprint 2
       if (top.score < 0.65) {
         console.log("low confidence - triggering grok agent fallback");
       }
     } catch (err) {
-      setResult("Hitilafu. Jaribu tena au tumia picha bora.");
+      console.error("detection failed:", err);
+      setResult(
+        language === "sw"
+          ? "Hitilafu. Jaribu tena au tumia picha bora."
+          : "Error. Try again or use a clearer photo.",
+      );
     } finally {
       setLoading(false);
     }
@@ -88,23 +91,28 @@ export default function AfriCropAI() {
 
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-emerald-700 hover:border-emerald-500 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer transition-colors mb-6"
+            className="relative border-2 border-dashed border-emerald-700 hover:border-emerald-500 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer transition-colors mb-6 overflow-hidden"
           >
             {preview ? (
               <Image
                 src={preview}
                 alt="Crop preview"
-                width={400}
-                height={400}
-                className="..."
-                unoptimized // needed for blob/data URLs from file upload
+                fill
+                className="object-cover rounded-2xl"
+                unoptimized
               />
             ) : (
               <>
                 <Camera className="w-16 h-16 text-emerald-600 mb-4" />
-                <p className="text-emerald-400">piga picha ya jani au pakia</p>
+                <p className="text-emerald-400">
+                  {language === "sw"
+                    ? "piga picha ya jani au pakia"
+                    : "take a leaf photo or upload"}
+                </p>
                 <p className="text-xs text-zinc-500 mt-2">
-                  inatumia kamera ya simu yako
+                  {language === "sw"
+                    ? "inatumia kamera ya simu yako"
+                    : "uses your phone's camera"}
                 </p>
               </>
             )}
@@ -123,20 +131,29 @@ export default function AfriCropAI() {
             disabled={!image || loading}
             className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 py-4 rounded-2xl font-semibold text-lg transition-all flex items-center justify-center gap-3"
           >
-            {loading ? "AI inafikiria..." : "scan jani • tambua ugonjwa"}
+            {loading
+              ? language === "sw"
+                ? "AI inafikiria..."
+                : "AI is thinking..."
+              : language === "sw"
+                ? "scan jani • tambua ugonjwa"
+                : "scan leaf • detect disease"}
             <Leaf className="w-5 h-5" />
           </button>
 
           {result && (
             <div className="mt-8 p-6 bg-[#0a140a] rounded-2xl border border-emerald-800">
-              <p className="text-emerald-400 text-sm mb-2">matokeo</p>
+              <p className="text-emerald-400 text-sm mb-2">
+                {language === "sw" ? "matokeo" : "result"}
+              </p>
               <p className="text-2xl font-semibold text-white">{result}</p>
               <p className="text-emerald-500 mt-3">confidence: {confidence}%</p>
 
               {confidence > 75 && (
                 <div className="mt-6 text-xs bg-emerald-950 border border-emerald-800 p-4 rounded-xl">
-                  next sprint: tutaongeza bei ya mazao na njia ya kubadilishana
-                  na wakulima wengine bila serikali.
+                  {language === "sw"
+                    ? "next sprint: tutaongeza bei ya mazao na njia ya kubadilishana na wakulima wengine bila serikali."
+                    : "next sprint: we'll add crop prices and a peer-to-peer exchange route for farmers, no government middleman."}
                 </div>
               )}
             </div>
