@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "npm run lint:ci",
-    "lint:ci": "next lint",
+    "lint": "eslint .",
+    "lint:ci": "eslint . --max-warnings=0",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:e2e": "playwright test"
@@ -20,6 +20,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@playwright/test": "^1.45.0",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
