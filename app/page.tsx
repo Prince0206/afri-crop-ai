@@ -1,3 +1,5 @@
+// app/page.tsx
+
 "use client";
 
 import { useState, useCallback } from "react";
@@ -24,6 +26,13 @@ export default function Home() {
   const handleFile = useCallback((selected: File) => {
     setFile(selected);
     setPreview(URL.createObjectURL(selected));
+    setResult(null);
+    setError(null);
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setFile(null);
+    setPreview(null);
     setResult(null);
     setError(null);
   }, []);
@@ -73,7 +82,12 @@ export default function Home() {
       <Header />
 
       <div className="max-w-md mx-auto px-4 py-10 space-y-6">
-        <UploadZone onFileSelected={handleFile} preview={preview} />
+        <UploadZone
+          onFileSelected={handleFile}
+          preview={preview}
+          isProcessing={loading}
+          onClear={handleClear}
+        />
 
         {file && (
           <button
