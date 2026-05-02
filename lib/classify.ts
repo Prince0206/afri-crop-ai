@@ -17,7 +17,7 @@ export async function classifyCassava(
 ): Promise<PredictionResult[]> {
   const results = await hf.imageClassification({
     model: MODEL_ID,
-    data: imageBuffer,
+    data: new Blob([imageBuffer]),
   });
 
   return results.map((r) => {
