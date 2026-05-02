@@ -1,3 +1,5 @@
+// lib/history.ts
+
 export interface ScanRecord {
   id: string;
   imageDataUrl: string;
@@ -7,15 +9,8 @@ export interface ScanRecord {
   timestamp: number;
 }
 
-const STORAGE_KEY = "africrop-scan-history";
+const STORAGE_KEY = "africrop-history";
 const MAX_RECORDS = 50;
-
-export function saveScan(record: ScanRecord): void {
-  const history = getHistory();
-  history.unshift(record);
-  if (history.length > MAX_RECORDS) history.length = MAX_RECORDS;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-}
 
 export function getHistory(): ScanRecord[] {
   if (typeof window === "undefined") return [];
@@ -27,6 +22,11 @@ export function getHistory(): ScanRecord[] {
   }
 }
 
+export function saveScan(record: ScanRecord): void {
+  const history = [record, ...getHistory()].slice(0, MAX_RECORDS);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
 export function clearHistory(): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+  localStorage.removeItem(STORAGE_KEY);
 }
