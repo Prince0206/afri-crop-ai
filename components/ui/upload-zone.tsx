@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { Camera, Upload, Image as ImageIcon, X } from "lucide-react";
+import Image from "next/image";
 
 interface UploadZoneProps {
   onFileSelected: (file: File) => void;
@@ -40,10 +41,13 @@ export default function UploadZone({
   if (preview) {
     return (
       <div className="relative w-full rounded-2xl overflow-hidden glass animate-fade-up">
-        <img
+        <Image
           src={preview}
-          alt="Leaf preview"
-          className="w-full h-64 sm:h-80 object-cover"
+          alt="Crop preview"
+          width={400}
+          height={400}
+          unoptimized
+          className="..."
         />
         {!isProcessing && (
           <button
