@@ -5,20 +5,16 @@
 import { useState, useCallback } from "react";
 import Header from "@/components/ui/header";
 import UploadZone from "@/components/ui/upload-zone";
-import ResultCard from "@/components/ui/result-card";
+import ResultCard, {
+  DetectionResult as CardDetectionResult,
+} from "@/components/ui/result-card";
 import HistoryPanel from "@/components/ui/history-panel";
 import { saveScan } from "@/lib/history";
-
-interface DetectionResult {
-  label: string;
-  labelSw: string;
-  confidence: number;
-}
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [result, setResult] = useState<DetectionResult | null>(null);
+  const [result, setResult] = useState<CardDetectionResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [historyKey, setHistoryKey] = useState(0);
@@ -56,16 +52,28 @@ export default function Home() {
         throw new Error(body?.error ?? `Detection failed (${res.status})`);
       }
 
-      const data: DetectionResult = await res.json();
-      setResult(data);
+      const raw = await res.json();
+
+      // The API may return a single result object or an array of results.
+      // Normalize into the shape expected by ResultCard (swahili field name) and an array.
+      const mapped: CardDetectionResult[] = (
+        Array.isArray(raw) ? raw : [raw]
+      ).map((r: any) => ({
+        label: r.label,
+        swahili: r.labelSw ?? r.swahili ?? "",
+        confidence: r.confidence,
+      }));
+
+      setResult(mapped);
 
       if (preview) {
+        const top = mapped[0];
         saveScan({
           id: crypto.randomUUID(),
           imageDataUrl: preview,
-          label: data.label,
-          labelSw: data.labelSw,
-          confidence: data.confidence,
+          label: top.label,
+          labelSw: top.swahili,
+          confidence: top.confidence,
           timestamp: Date.now(),
         });
         setHistoryKey((k) => k + 1);
