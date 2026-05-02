@@ -3,27 +3,39 @@
 import { useState, useCallback } from "react";
 import Header from "@/components/ui/header";
 import UploadZone from "@/components/ui/upload-zone";
-import ResultCard, { DetectionResult } from "@/components/ui/result-card";
+import ResultCard from "@/components/ui/result-card";
+import HistoryPanel from "@/components/ui/history-panel";
+import { saveScan } from "@/lib/history";
+
+interface DetectionResult {
+  label: string;
+  labelSw: string;
+  confidence: number;
+}
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [results, setResults] = useState<DetectionResult[] | null>(null);
-  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState<DetectionResult | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyKey, setHistoryKey] = useState(0);
 
-  const handleFileSelected = useCallback(async (selected: File) => {
+  const handleFile = useCallback((selected: File) => {
     setFile(selected);
-    setResults(null);
+    setPreview(URL.createObjectURL(selected));
+    setResult(null);
     setError(null);
+  }, []);
 
-    const objectUrl = URL.createObjectURL(selected);
-    setPreview(objectUrl);
-    setProcessing(true);
+  async function handleDetect() {
+    if (!file) return;
+    setLoading(true);
+    setError(null);
 
     try {
       const formData = new FormData();
-      formData.append("image", selected);
+      formData.append("image", file);
 
       const res = await fetch("/api/detect", {
         method: "POST",
@@ -31,71 +43,60 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `Server error ${res.status}`);
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? `Detection failed (${res.status})`);
       }
 
-      const data = await res.json();
-      setResults(data.results);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Detection failed";
-      setError(msg);
-    } finally {
-      setProcessing(false);
-    }
-  }, []);
+      const data: DetectionResult = await res.json();
+      setResult(data);
 
-  const handleClear = useCallback(() => {
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(null);
-    setPreview(null);
-    setResults(null);
-    setError(null);
-  }, [preview]);
+      if (preview) {
+        saveScan({
+          id: crypto.randomUUID(),
+          imageDataUrl: preview,
+          label: data.label,
+          labelSw: data.labelSw,
+          confidence: data.confidence,
+          timestamp: Date.now(),
+        });
+        setHistoryKey((k) => k + 1);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-950 dark:via-gray-900 dark:to-emerald-950">
       <Header />
 
-      <div className="flex-1 flex flex-col items-center px-4 sm:px-6 pb-12">
-        <div className="w-full max-w-md mt-6 sm:mt-12 space-y-6">
-          {/* Tagline */}
-          {!preview && (
-            <div className="text-center animate-fade-up">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Diagnose your cassava
-                <span className="text-emerald-400"> instantly</span>
-              </h2>
-              <p className="text-sm text-white/40 mt-2 max-w-xs mx-auto">
-                Snap a photo of any cassava leaf and our AI identifies blight,
-                mosaic, and other diseases in seconds.
-              </p>
-            </div>
-          )}
+      <div className="max-w-md mx-auto px-4 py-10 space-y-6">
+        <UploadZone onFile={handleFile} preview={preview} />
 
-          {/* Upload */}
-          <UploadZone
-            onFileSelected={handleFileSelected}
-            isProcessing={processing}
-            preview={preview}
-            onClear={handleClear}
-          />
+        {file && (
+          <button
+            onClick={handleDetect}
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-semibold text-white
+                       bg-emerald-600 hover:bg-emerald-700
+                       disabled:opacity-50 disabled:cursor-not-allowed
+                       transition-colors"
+          >
+            {loading ? "Analyzing…" : "Detect Blight"}
+          </button>
+        )}
 
-          {/* Error */}
-          {error && (
-            <div className="w-full rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300 animate-fade-up">
-              {error}
-            </div>
-          )}
-
-          {/* Results */}
-          {results && <ResultCard results={results} onReset={handleClear} />}
-
-          {/* Footer */}
-          <p className="text-center text-[11px] text-white/20 pt-4">
-            Powered by Hugging Face · Built for African farmers
+        {error && (
+          <p className="text-center text-sm text-red-600 dark:text-red-400">
+            {error}
           </p>
-        </div>
+        )}
+
+        {result && <ResultCard {...result} />}
+
+        <HistoryPanel key={historyKey} />
       </div>
     </main>
   );
