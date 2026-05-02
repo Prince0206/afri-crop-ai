@@ -108,7 +108,7 @@ export default function Home() {
           </p>
         )}
 
-        {result && <ResultCard {...result} />}
+        {result && <ResultCard results={result} onReset={handleClear} />}
 
         <HistoryPanel key={historyKey} />
       </div>
