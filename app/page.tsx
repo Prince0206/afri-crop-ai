@@ -73,7 +73,7 @@ export default function Home() {
       <Header />
 
       <div className="max-w-md mx-auto px-4 py-10 space-y-6">
-        <UploadZone onFile={handleFile} preview={preview} />
+        <UploadZone onFileSelected={handleFile} preview={preview} />
 
         {file && (
           <button
