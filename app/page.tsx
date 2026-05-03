@@ -1,8 +1,6 @@
-// app/page.tsx
-
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Header from "@/components/ui/header";
 import UploadZone from "@/components/ui/upload-zone";
 import ResultCard, {
@@ -10,8 +8,12 @@ import ResultCard, {
 } from "@/components/ui/result-card";
 import HistoryPanel from "@/components/ui/history-panel";
 import { saveScan } from "@/lib/history";
+import { cacheAdvisoryData, getAdvisory } from "@/lib/advisory";
 
 export default function Home() {
+  useEffect(() => {
+    cacheAdvisoryData();
+  }, []);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<CardDetectionResult[] | null>(null);
@@ -54,15 +56,26 @@ export default function Home() {
 
       const raw = await res.json();
 
-      // The API may return a single result object or an array of results.
-      // Normalize into the shape expected by ResultCard (swahili field name) and an array.
       const mapped: CardDetectionResult[] = (
         Array.isArray(raw) ? raw : [raw]
-      ).map((r: any) => ({
-        label: r.label,
-        swahili: r.labelSw ?? r.swahili ?? "",
-        confidence: r.confidence,
-      }));
+      ).map((r: any) => {
+        const label = r.label;
+        const advisory = getAdvisory(label);
+        return {
+          label,
+          swahili: r.labelSw ?? r.swahili ?? "",
+          confidence: r.confidence,
+          advisory, // 🚀 attach advisory data
+        };
+      });
+
+      {
+        !navigator.onLine && (
+          <p className="text-center text-xs text-gray-500">
+            Offline mode — using cached advisories.
+          </p>
+        );
+      }
 
       setResult(mapped);
 
@@ -116,6 +129,7 @@ export default function Home() {
           </p>
         )}
 
+        {/* automatically passes advisory into ResultCard */}
         {result && <ResultCard results={result} onReset={handleClear} />}
 
         <HistoryPanel key={historyKey} />

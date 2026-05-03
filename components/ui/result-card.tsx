@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle2, RotateCcw } from "lucide-react";
+import { getAdvisory } from "@/lib/advisory";
+import type { Advisory } from "@/lib/advisory";
 
 export interface DetectionResult {
   label: string;
@@ -37,6 +40,14 @@ function ConfidenceBar({ value, color }: { value: number; color: string }) {
 
 export default function ResultCard({ results, onReset }: ResultCardProps) {
   const top = results[0];
+
+  const [advisory, setAdvisory] = useState<Advisory | null>(null);
+
+  useEffect(() => {
+    if (!top) return;
+    getAdvisory(top.label).then(setAdvisory);
+  }, [top]);
+
   if (!top) return null;
 
   const color = severityColor(top.label);
@@ -85,6 +96,37 @@ export default function ResultCard({ results, onReset }: ResultCardProps) {
         </div>
       </div>
 
+      {/* Advisory */}
+      {advisory && (
+        <div className="border-t border-white/5 px-6 py-4 space-y-3">
+          <p className="text-sm italic text-white/60">{advisory.summary}</p>
+          <div>
+            <h3 className="text-xs uppercase tracking-wider text-white/40 mb-2">
+              Actions
+            </h3>
+            <ul className="list-disc ml-5 space-y-1">
+              {advisory.actions.map((a, i) => (
+                <li key={i} className="text-sm text-white/70">
+                  {a}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-xs uppercase tracking-wider text-white/40 mb-2">
+              Prevention
+            </h3>
+            <ul className="list-disc ml-5 space-y-1">
+              {advisory.prevention.map((p, i) => (
+                <li key={i} className="text-sm text-white/70">
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {/* Secondary results */}
       {results.length > 1 && (
         <div className="border-t border-white/5 px-6 py-4 space-y-3">
@@ -116,6 +158,7 @@ export default function ResultCard({ results, onReset }: ResultCardProps) {
       {/* Action */}
       <div className="border-t border-white/5 p-4 flex justify-center">
         <button
+          type="button"
           onClick={onReset}
           className="px-6 py-2.5 rounded-xl glass-strong text-sm font-medium text-white hover:bg-white/15 transition-colors flex items-center gap-2"
         >
