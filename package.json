@@ -24,6 +24,7 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
+    "fast-check": "^3.22.0",
     "@eslint/eslintrc": "^3.3.5",
     "@playwright/test": "^1.45.0",
     "@types/node": "^20.14.0",

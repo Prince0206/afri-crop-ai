@@ -7,13 +7,26 @@ import ResultCard, {
   DetectionResult as CardDetectionResult,
 } from "@/components/ui/result-card";
 import HistoryPanel from "@/components/ui/history-panel";
+import OnboardingFlow, {
+  shouldShowOnboarding,
+} from "@/components/ui/onboarding-flow";
 import { saveScan } from "@/lib/history";
 import { cacheAdvisoryData, getAdvisory } from "@/lib/advisory";
 
 export default function Home() {
+  // Onboarding: null = not yet determined (SSR-safe), true = show, false = skip
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+
   useEffect(() => {
+    // Determine onboarding state on the client after mount
+    setShowOnboarding(shouldShowOnboarding());
     cacheAdvisoryData();
   }, []);
+
+  const handleOnboardingComplete = useCallback(() => {
+    setShowOnboarding(false);
+  }, []);
+
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<CardDetectionResult[] | null>(null);
@@ -100,6 +113,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-950 dark:via-gray-900 dark:to-emerald-950">
+      {/* First-run onboarding overlay */}
+      {showOnboarding === true && (
+        <OnboardingFlow onComplete={handleOnboardingComplete} />
+      )}
+
       <Header />
 
       <div className="max-w-md mx-auto px-4 py-10 space-y-6">
