@@ -569,3 +569,17 @@ export function getAdvisory(label: string, locale?: string): Advisory {
 
   return base;
 }
+
+/**
+ * Pre-populates the IndexedDB offline cache with all advisory records.
+ * Called once on app init so advisory data is available without network access.
+ * Fails silently if IndexedDB is unavailable (e.g. private browsing).
+ */
+export async function cacheAdvisoryData(): Promise<void> {
+  try {
+    const { set } = await import("idb-keyval");
+    await set("africrop-advisory-cache", advisoryData);
+  } catch {
+    // IndexedDB unavailable — in-memory advisoryData is always the fallback
+  }
+}
