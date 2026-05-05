@@ -49,34 +49,34 @@
   - [x] 5.9 Write property-based tests for Properties 7, 8, and 15 (confidence warning threshold, confidence bar width, severity badge validity) using fast-check
 
 - [ ] 6. Implement Expert Chat UI (`ChatPanel`)
-  - [~] 6.1 Create `components/ui/chat-panel.tsx` with a scrollable message history area and a message input field
-  - [~] 6.2 Implement character counter that updates live and prevents submission when input exceeds 500 characters; add `aria-live="polite"` to the counter
-  - [~] 6.3 Implement chat history persistence: load from `localStorage["africrop-chat-history"]` on mount, save after each message pair, cap at 50 messages
-  - [~] 6.4 Implement `POST /api/chat` call on message submission: include the last 20 messages and optional `detectionResult` context; disable input and show typing indicator while awaiting response
-  - [~] 6.5 Handle API errors and 15-second timeout via `AbortController`; display `t("chat.error")` inline on failure
-  - [~] 6.6 Add an "Ask an Expert" button to `app/page.tsx` that is visible after a detection result is shown and also in the main navigation area; toggles `ChatPanel` visibility
-  - [~] 6.7 Ensure all chat UI strings use `t()` from `useI18n()`
-  - [~] 6.8 Write unit tests for: character limit enforcement, history cap at 50, typing indicator shown while loading, error message on API failure
-  - [~] 6.9 Write property-based tests for Properties 9 and 10 (chat message cap, character limit) using fast-check
+  - [ ] 6.1 Create `components/ui/chat-panel.tsx` with a scrollable message history area and a message input field
+  - [ ] 6.2 Implement character counter that updates live and prevents submission when input exceeds 500 characters; add `aria-live="polite"` to the counter
+  - [ ] 6.3 Implement chat history persistence: load from `localStorage["africrop-chat-history"]` on mount, save after each message pair, cap at 50 messages
+  - [ ] 6.4 Implement `POST /api/chat` call on message submission: include the last 20 messages and optional `detectionResult` context; disable input and show typing indicator while awaiting response
+  - [ ] 6.5 Handle API errors and 15-second timeout via `AbortController`; display `t("chat.error")` inline on failure
+  - [ ] 6.6 Add an "Ask an Expert" button to `app/page.tsx` that is visible after a detection result is shown and also in the main navigation area; toggles `ChatPanel` visibility
+  - [ ] 6.7 Ensure all chat UI strings use `t()` from `useI18n()`
+  - [ ] 6.8 Write unit tests for: character limit enforcement, history cap at 50, typing indicator shown while loading, error message on API failure
+  - [ ] 6.9 Write property-based tests for Properties 9 and 10 (chat message cap, character limit) using fast-check
 
 - [ ] 7. Implement `POST /api/chat` server route
-  - [~] 7.1 Create `app/api/chat/route.ts` with a `POST` handler that validates the request body (messages is a non-empty array)
-  - [~] 7.2 Implement total character count check: reject with HTTP 413 `{ error: "Request too large" }` if total chars > 10,000
-  - [~] 7.3 Trim the messages array to the last 20 items before forwarding to the LLM
-  - [~] 7.4 Build a system prompt that includes the active locale and a structured summary of the detection context (if provided)
-  - [~] 7.5 Call the HuggingFace Inference API (text generation) using `process.env.HF_TOKEN`; return `{ reply: string }` on success
-  - [~] 7.6 Return HTTP 502 `{ error: "LLM provider error" }` on provider failure or missing `HF_TOKEN`
-  - [~] 7.7 Write unit tests for: 400 on missing messages, 400 on non-array messages, 413 on oversized request, 502 on LLM failure, correct truncation to 20 messages
-  - [~] 7.8 Write property-based tests for Properties 11, 12, and 13 (message truncation, character limit enforcement, invalid request rejection) using fast-check
+  - [ ] 7.1 Create `app/api/chat/route.ts` with a `POST` handler that validates the request body (messages is a non-empty array)
+  - [ ] 7.2 Implement total character count check: reject with HTTP 413 `{ error: "Request too large" }` if total chars > 10,000
+  - [ ] 7.3 Trim the messages array to the last 20 items before forwarding to the LLM
+  - [ ] 7.4 Build a system prompt that includes the active locale and a structured summary of the detection context (if provided)
+  - [ ] 7.5 Call the HuggingFace Inference API (text generation) using `process.env.HF_TOKEN`; return `{ reply: string }` on success
+  - [ ] 7.6 Return HTTP 502 `{ error: "LLM provider error" }` on provider failure or missing `HF_TOKEN`
+  - [ ] 7.7 Write unit tests for: 400 on missing messages, 400 on non-array messages, 413 on oversized request, 502 on LLM failure, correct truncation to 20 messages
+  - [ ] 7.8 Write property-based tests for Properties 11, 12, and 13 (message truncation, character limit enforcement, invalid request rejection) using fast-check
 
 - [ ] 8. Add fast-check to devDependencies and configure test infrastructure
-  - [~] 8.1 Add `fast-check` to `devDependencies` in `package.json` and run `npm install`
-  - [~] 8.2 Verify `vitest.config.ts` includes the `tests/unit/` glob and that `fast-check` imports resolve correctly
-  - [~] 8.3 Run the full unit test suite (`npm run test:unit`) and confirm all tests pass
+  - [ ] 8.1 Add `fast-check` to `devDependencies` in `package.json` and run `npm install`
+  - [ ] 8.2 Verify `vitest.config.ts` includes the `tests/unit/` glob and that `fast-check` imports resolve correctly
+  - [ ] 8.3 Run the full unit test suite (`npm run test:unit`) and confirm all tests pass
 
 - [ ] 9. Accessibility and offline hardening
-  - [~] 9.1 Audit all new interactive elements (language selector, onboarding buttons, chat input, share button) and ensure each has an accessible name via `aria-label` or `<label>`
-  - [~] 9.2 Add visible focus indicators (`:focus-visible` ring) to all new interactive elements
-  - [~] 9.3 Add an offline indicator banner in `app/page.tsx` that appears when `navigator.onLine === false`, using `t("offline.banner")`
-  - [~] 9.4 Verify `cacheAdvisoryData()` is called on app init and that advisory data is accessible via `getAdvisory` when IndexedDB is populated
-  - [~] 9.5 Add `type="button"` to all `<button>` elements that are not form submit buttons (fixes existing lint hints)
+  - [ ] 9.1 Audit all new interactive elements (language selector, onboarding buttons, chat input, share button) and ensure each has an accessible name via `aria-label` or `<label>`
+  - [ ] 9.2 Add visible focus indicators (`:focus-visible` ring) to all new interactive elements
+  - [ ] 9.3 Add an offline indicator banner in `app/page.tsx` that appears when `navigator.onLine === false`, using `t("offline.banner")`
+  - [ ] 9.4 Verify `cacheAdvisoryData()` is called on app init and that advisory data is accessible via `getAdvisory` when IndexedDB is populated
+  - [ ] 9.5 Add `type="button"` to all `<button>` elements that are not form submit buttons (fixes existing lint hints)
