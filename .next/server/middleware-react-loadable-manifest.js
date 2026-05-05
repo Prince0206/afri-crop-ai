@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}";
+self.__REACT_LOADABLE_MANIFEST='{"lib\\\\advisory.ts -> idb-keyval":{"id":3759,"files":["static/chunks/759.74420d6a03c99be3.js"]}}';
