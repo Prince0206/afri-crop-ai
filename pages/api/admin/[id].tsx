@@ -1,22 +1,23 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, useCallback } from "react";
 
 export default function ConversationView() {
   const { query } = useRouter();
   const [convo, setConvo] = useState<any>(null);
   const [reply, setReply] = useState("");
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!query.id) return;
     const data = await fetch(`/api/admin/conversations/${query.id}`).then((r) =>
       r.json(),
     );
     setConvo(data);
-  }
+  }, [query.id]);
 
   useEffect(() => {
     load();
-  }, [query.id]);
+  }, [load]);
 
   async function send() {
     if (!reply.trim()) return;
@@ -49,7 +50,13 @@ export default function ConversationView() {
             <p className="text-xs uppercase text-gray-500">{m.sender}</p>
             <p>{m.content}</p>
             {m.imageUrl && (
-              <img src={m.imageUrl} className="rounded mt-1 max-h-40" />
+              <Image
+                src={m.imageUrl}
+                alt={`Message from ${m.sender}`}
+                width={160}
+                height={160}
+                className="rounded mt-1 max-h-40"
+              />
             )}
           </div>
         ))}
