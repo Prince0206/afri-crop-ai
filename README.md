@@ -96,7 +96,7 @@ AfriCrop AI empowers subsistence farmers with:
 
 ## 🚀 Local Development
 
-``bash
+```bash
 git clone https://github.com/Prince0206/afri-crop-ai.git
 cd afri-crop-ai
 npm install
