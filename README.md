@@ -2,7 +2,7 @@
 
 **Decentralized AI Agent for African Subsistence Farmers**
 
-A capstone project applying software engineering, AI, and Web3 to deliver real impact for smallholder farmers across Africa — disease detection in local languages, yield forecasting, and peer-to-peer crop bartering on Solana.
+A capstone project applying software engineering, AI, and Web3 to deliver real impact for smallholder farmers across Africa disease detection in local languages, yield forecasting, and peer-to-peer crop bartering on Solana.
 
 > **Live Demo:** [Coming Sprint 1 End — May 12, 2026]
 > **Status:** 🚧 Sprint 1 in progress
@@ -12,6 +12,17 @@ A capstone project applying software engineering, AI, and Web3 to deliver real i
 ## 🎯 Problem Statement
 
 Over 33 million smallholder farms across Sub-Saharan Africa lose 20–40% of yield annually to crop disease, weather shocks, and broken supply chains. Existing AgriTech ignores them: no Swahili/Yoruba support, requires constant internet, demands bank accounts. AfriCrop AI flips the model — phone-first, offline-capable, wallet-based, and fluent in local languages.
+
+---
+
+## 🚀 Project Vision
+AfriCrop AI empowers subsistence farmers with:
+- **Disease Detection:** Cassava, maize, yam, sorghum via phone‑cam + fine‑tuned vision models.
+- **Yield Prediction:** Sentinel‑2 satellite data + local knowledge.
+- **P2P Marketplace:** Crypto‑bartering with USDC on Solana testnet.
+- **Offline‑First:** TensorFlow.js + IndexedDB, sync to IPFS when online.
+- **Swarm Agents:** Disease, yield, market, risk agents coordinate via prompt chaining + local vector store.
+- **Voice & Alerts:** Whisper multilingual voice UI, SMS drought/smuggler alerts via Twilio.
 
 ---
 
@@ -74,9 +85,18 @@ Over 33 million smallholder farms across Sub-Saharan Africa lose 20–40% of yie
 
 ---
 
+## 📂 Deliverables (Rubric‑Aligned)
+- [Repo](./) → all code, documented
+- [Deployed App](https://afri-crop-ai.onrender.com) → Render free tier
+- [Agile Board](https://github.com/users/Prince0206/projects/3) → GitHub Projects
+- [Design & Testing Doc](./docs/design-testing.md) → architecture, testing, CI/CD
+- [Demo Recordings](./demos) → sprint + final presentations
+
+---
+
 ## 🚀 Local Development
 
-```bash
+``bash
 git clone https://github.com/Prince0206/afri-crop-ai.git
 cd afri-crop-ai
 npm install
@@ -85,7 +105,8 @@ npm run dev
 
 Open http://localhost:3000.
 
-🧪 Testing
+## 🧪 Testing
+``bash
 npm run test:unit     # Vitest
 npm run test:e2e      # Playwright
 npm run lint          # ESLint
